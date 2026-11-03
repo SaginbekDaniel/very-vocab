@@ -4,12 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Very Vocab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@600;700&display=swap" rel="stylesheet">
 <meta name="description" content="Flashcards and quiz: stronger words instead of “very + adjective”, and the B1 Preliminary word list.">
 <style>
 :root{
   --bg:#f6f5f2; --surface:#fff; --text:#1c1c1e; --muted:#6b6b70; --line:#e3e1dc;
   --accent:#d9480f; --accent-ink:#fff; --ok:#2b8a3e; --ok-bg:#e6f4ea; --bad:#c92a2a; --bad-bg:#fdecec;
   --r:12px; --gap:16px;
+  /* Unbounded: display face for titles and the words being learned; Manrope: UI and running text. Both cover Cyrillic. */
+  --font-display:"Unbounded",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-body:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -19,19 +25,20 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0}
-body{background:var(--bg);color:var(--text);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+body{background:var(--bg);color:var(--text);font:500 16px/1.45 var(--font-body);
   min-height:100dvh;padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
 .wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:var(--gap)}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 header{display:flex;align-items:center;justify-content:space-between;gap:12px}
 h1{margin:0;min-width:0}
-/* deck picker doubles as the page title */
-.deck{position:relative;display:block;min-width:0}
-.deck select{appearance:none;-webkit-appearance:none;max-width:100%;border:0;background:transparent;color:var(--text);
-  font:inherit;font-size:20px;font-weight:700;letter-spacing:-.01em;padding:4px 22px 4px 0;cursor:pointer;
-  text-overflow:ellipsis;white-space:nowrap;overflow:hidden}
-.deck::after{content:"";position:absolute;right:4px;top:50%;width:7px;height:7px;margin-top:-6px;
-  border:solid var(--muted);border-width:0 2px 2px 0;transform:rotate(45deg);pointer-events:none}
+/* Deck picker doubles as the page title: the visible text is a span sized to the current deck name,
+   with the native <select> laid invisibly over it so the OS picker still opens on tap. */
+.deck{position:relative;display:inline-flex;align-items:center;gap:10px;max-width:100%;min-width:0;padding:4px 0;border-radius:6px;
+  font-family:var(--font-display);font-size:19px;font-weight:700;letter-spacing:-.02em;cursor:pointer}
+.deck .cur{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.deck::after{content:"";flex:none;width:7px;height:7px;margin-top:-4px;border:solid var(--muted);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.deck select{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:16px;appearance:none;-webkit-appearance:none}
+.deck:has(select:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
 .lang{display:flex;flex:none;border:1px solid var(--line);border-radius:8px;overflow:hidden}
 .lang button{border:0;background:transparent;color:var(--muted);padding:6px 10px;font:inherit;font-size:13px;cursor:pointer}
 .lang button[aria-pressed="true"]{background:var(--text);color:var(--bg)}
@@ -59,25 +66,25 @@ h1{margin:0;min-width:0}
   padding:20px 20px 40px;text-align:center}
 .face.back{transform:rotateY(180deg)}
 .face .label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-.face .word{font-size:clamp(28px,8vw,40px);font-weight:700;letter-spacing:-.02em;line-height:1.15;max-width:100%}
+.face .word{font-family:var(--font-display);font-size:clamp(23px,6.6vw,32px);font-weight:700;letter-spacing:-.03em;line-height:1.2;max-width:100%}
 .face.back .word{color:var(--accent)}
 .face .tr,.pos{color:var(--muted)}
 .pos{font-size:13px}
 .ex{color:var(--muted);font-style:italic;font-size:15px;max-width:100%;white-space:pre-line}
-.pos:empty,.ex:empty,.face .tr:empty{display:none}
+.pos:empty,.ex:empty,.q .ex:empty,.face .tr:empty{display:none}
 .face .hint{position:absolute;bottom:14px;font-size:13px;color:var(--muted)}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .btn{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:10px;padding:12px 14px;font:inherit;font-weight:600;cursor:pointer;min-height:44px}
 .btn:hover{border-color:var(--muted)}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .btn.ok{color:var(--ok)} .btn.bad{color:var(--bad)}
-.btn:focus-visible,.tabs button:focus-visible,.lang button:focus-visible,.card:focus-visible,.opt:focus-visible,.deck select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn:focus-visible,.tabs button:focus-visible,.lang button:focus-visible,.card:focus-visible,.opt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .link{background:none;border:0;color:var(--muted);font:inherit;font-size:14px;text-decoration:underline;cursor:pointer;justify-self:center;padding:4px}
 /* quiz */
 .q{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;text-align:center}
 .q .prompt{color:var(--muted);font-size:14px;margin-bottom:6px}
-.q .word{font-size:clamp(26px,7vw,34px);font-weight:700;line-height:1.2}
-.q .pos{margin-top:4px}
+.q .word{font-family:var(--font-display);font-size:clamp(22px,6vw,28px);font-weight:700;letter-spacing:-.03em;line-height:1.25}
+.q .pos,.q .ex{margin-top:6px}
 .opts{display:grid;gap:8px}
 .opt{display:flex;align-items:center;gap:12px;text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:10px;padding:12px 14px;font:inherit;cursor:pointer;min-height:48px}
 .opt kbd{flex:none;font:12px ui-monospace,monospace;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:1px 6px}
@@ -86,7 +93,7 @@ h1{margin:0;min-width:0}
 .opt.wrong{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
 .opt:disabled{cursor:default}
 .result{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:24px;text-align:center}
-.result .score{font-size:48px;font-weight:800;letter-spacing:-.03em}
+.result .score{font-family:var(--font-display);font-size:44px;font-weight:700;letter-spacing:-.04em}
 .result p{margin:6px 0 0;color:var(--muted)}
 .mist{list-style:none;padding:0;margin:16px 0 0;text-align:left;display:grid;gap:6px}
 .mist li{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding-top:6px;font-size:15px}
@@ -100,7 +107,7 @@ footer{color:var(--muted);font-size:12px;text-align:center}
 <div class="wrap">
   <header>
     <h1>
-      <label class="deck"><span class="sr-only" data-i18n="deck"></span><select id="deck"></select></label>
+      <label class="deck"><span class="sr-only" data-i18n="deck"></span><span class="cur" id="deckCur" aria-hidden="true"></span><select id="deck"></select></label>
     </h1>
     <div class="lang" role="group" aria-label="Language">
       <button data-lang="ru">RU</button><button data-lang="en">EN</button>
@@ -126,7 +133,7 @@ footer{color:var(--muted);font-size:12px;text-align:center}
             <span class="pos" id="cPos"></span><span class="ex" id="cEx" lang="en"></span>
             <span class="hint" data-i18n="tapHint"></span>
           </div>
-          <div class="face back"><span class="label" id="cBackLabel"></span><span class="word" id="cBack"></span><span class="tr" id="cTr" lang="ru"></span><span class="ex" id="cExTr" lang="ru"></span></div>
+          <div class="face back"><span class="label" id="cBackLabel"></span><span class="word" id="cBack"></span><span class="tr" id="cTr"></span><span class="ex" id="cExFull" lang="en"></span><span class="ex" id="cExTr" lang="ru"></span></div>
         </div>
       </div>
       <div class="row">
@@ -142,7 +149,7 @@ footer{color:var(--muted);font-size:12px;text-align:center}
     <div class="wrap" id="qPlay">
       <div class="meta"><span id="qMeta"></span><span id="qScore"></span></div>
       <div class="bar"><i id="qBar"></i></div>
-      <div class="q"><div class="prompt" id="qPrompt"></div><div class="word" id="qWord"></div><div class="pos" id="qPos"></div></div>
+      <div class="q"><div class="prompt" id="qPrompt"></div><div class="word" id="qWord"></div><div class="pos" id="qPos"></div><div class="ex" id="qEx" lang="en"></div></div>
       <div class="opts" id="qOpts"></div>
       <button class="btn primary" id="qNext" hidden></button>
     </div>
@@ -481,10 +488,80 @@ cyclist|n|велосипедист|The road is dangerous for cyclists.|Эта д
   return {id:w,q:w,a:ru,pos,ex,exTr,group:pos.split(/[\s,&]/)[0],letter:w[0].toUpperCase()};
 });
 
-/* Each deck: q = prompt side, a = answer side. Quiz goes q→a, and 30% of the time a→q. */
+// Superlatives: base | comparative | superlative | Russian | example (must contain the superlative) | translation | wrong forms (optional, “;”-separated)
+const SUP = `
+big|bigger|the biggest|самый большой|Tokyo is one of the biggest cities in the world.|Токио — один из самых больших городов мира.
+small|smaller|the smallest|самый маленький|This is the smallest room in the house.|Это самая маленькая комната в доме.
+tall|taller|the tallest|самый высокий (о людях, зданиях)|Tom is the tallest boy in our class.|Том — самый высокий мальчик в нашем классе.
+old|older|the oldest|самый старый, старший|She is the oldest of three sisters.|Она старшая из трёх сестёр.
+young|younger|the youngest|самый младший, молодой|My brother is the youngest in the family.|Мой брат — самый младший в семье.
+long|longer|the longest|самый длинный|The Nile is the longest river in Africa.|Нил — самая длинная река в Африке.
+short|shorter|the shortest|самый короткий, низкий|February is the shortest month.|Февраль — самый короткий месяц.
+fast|faster|the fastest|самый быстрый|The cheetah is the fastest animal on land.|Гепард — самое быстрое животное на суше.
+cheap|cheaper|the cheapest|самый дешёвый|This is the cheapest phone in the shop.|Это самый дешёвый телефон в магазине.
+rich|richer|the richest|самый богатый|He is the richest man in the town.|Он самый богатый человек в городе.
+strong|stronger|the strongest|самый сильный|Who is the strongest person you know?|Кто самый сильный человек из твоих знакомых?
+cold|colder|the coldest|самый холодный|January is the coldest month here.|Январь здесь — самый холодный месяц.
+high|higher|the highest|самый высокий (о горах, ценах)|Everest is the highest mountain in the world.|Эверест — самая высокая гора в мире.
+clean|cleaner|the cleanest|самый чистый|This is the cleanest beach on the coast.|Это самый чистый пляж на побережье.
+hot|hotter|the hottest|самый жаркий, горячий|July is the hottest month of the year.|Июль — самый жаркий месяц в году.
+thin|thinner|the thinnest|самый тонкий, худой|This is the thinnest laptop I've ever seen.|Это самый тонкий ноутбук, который я видел.
+fat|fatter|the fattest|самый толстый|Our cat is the fattest cat in the street.|Наш кот — самый толстый на улице.
+wet|wetter|the wettest|самый дождливый, мокрый|November is the wettest month in London.|Ноябрь — самый дождливый месяц в Лондоне.
+sad|sadder|the saddest|самый грустный|It was the saddest film I've ever seen.|Это был самый грустный фильм, который я видел.
+nice|nicer|the nicest|самый приятный|She is the nicest person in our office.|Она самый приятный человек в нашем офисе.
+large|larger|the largest|самый крупный|Russia is the largest country in the world.|Россия — самая большая страна в мире.
+safe|safer|the safest|самый безопасный|This is the safest car on the market.|Это самая безопасная машина на рынке.
+happy|happier|the happiest|самый счастливый|It was the happiest day of my life.|Это был самый счастливый день в моей жизни.
+easy|easier|the easiest|самый лёгкий|This is the easiest question in the test.|Это самый лёгкий вопрос в тесте.
+busy|busier|the busiest|самый загруженный|Friday is the busiest day of the week.|Пятница — самый загруженный день недели.
+funny|funnier|the funniest|самый смешной|He told the funniest joke at the party.|Он рассказал самую смешную шутку на вечеринке.
+heavy|heavier|the heaviest|самый тяжёлый|This is the heaviest bag on the plane.|Это самая тяжёлая сумка в самолёте.
+pretty|prettier|the prettiest|самый симпатичный, милый|It's the prettiest village in the area.|Это самая симпатичная деревня в округе.
+early|earlier|the earliest|самый ранний|What's the earliest train to Oxford?|Какой самый ранний поезд до Оксфорда?
+lazy|lazier|the laziest|самый ленивый|Our dog is the laziest dog in the world.|Наша собака — самая ленивая на свете.
+dirty|dirtier|the dirtiest|самый грязный|That was the dirtiest hotel we've ever stayed in.|Это был самый грязный отель, где мы останавливались.
+noisy|noisier|the noisiest|самый шумный|Our street is the noisiest in the city.|Наша улица — самая шумная в городе.
+lucky|luckier|the luckiest|самый везучий|I'm the luckiest person in the world!|Я самый везучий человек на свете!
+healthy|healthier|the healthiest|самый полезный, здоровый|What's the healthiest breakfast?|Какой завтрак самый полезный?
+beautiful|more beautiful|the most beautiful|самый красивый|Paris is the most beautiful city I've visited.|Париж — самый красивый город, где я был.
+expensive|more expensive|the most expensive|самый дорогой|This is the most expensive restaurant in town.|Это самый дорогой ресторан в городе.
+interesting|more interesting|the most interesting|самый интересный|History is the most interesting subject for me.|История для меня — самый интересный предмет.
+important|more important|the most important|самый важный|Health is the most important thing.|Здоровье — самое важное.
+difficult|more difficult|the most difficult|самый трудный|This is the most difficult exercise in the book.|Это самое трудное упражнение в учебнике.
+dangerous|more dangerous|the most dangerous|самый опасный|It's the most dangerous road in the country.|Это самая опасная дорога в стране.
+famous|more famous|the most famous|самый знаменитый|She is the most famous singer in Brazil.|Она самая знаменитая певица в Бразилии.
+comfortable|more comfortable|the most comfortable|самый удобный|This is the most comfortable chair in the house.|Это самое удобное кресло в доме.
+popular|more popular|the most popular|самый популярный|Football is the most popular sport in Europe.|Футбол — самый популярный вид спорта в Европе.
+exciting|more exciting|the most exciting|самый захватывающий|It was the most exciting match of the season.|Это был самый захватывающий матч сезона.
+boring|more boring|the most boring|самый скучный|That was the most boring lesson ever.|Это был самый скучный урок на свете.
+careful|more careful|the most careful|самый аккуратный, осторожный|She is the most careful driver in our family.|Она самый аккуратный водитель в нашей семье.
+modern|more modern|the most modern|самый современный|This is the most modern building in the city.|Это самое современное здание в городе.
+delicious|more delicious|the most delicious|самый вкусный|This is the most delicious cake I've ever eaten.|Это самый вкусный торт, который я ел.
+good|better|the best|самый лучший|She is the best student in the class.|Она лучшая ученица в классе.|the goodest;the most good;the better
+bad|worse|the worst|самый плохой, худший|It was the worst day of my life.|Это был худший день в моей жизни.|the baddest;the most bad;the worse
+far|further / farther|the furthest|самый дальний|Neptune is the furthest planet from the Sun.|Нептун — самая дальняя от Солнца планета.|the farest;the most far;the further
+many / much|more|the most|больше всего|Who has got the most points?|У кого больше всего очков?|the manyest;the more;the muchest
+little|less|the least|меньше всего|I spent the least money on presents.|Я потратил меньше всего денег на подарки.|the lessest;the less;the most little
+`.trim().split("\n").map(line=>{
+  const [w,comp,sup,ru,ex,exTr,wrong=""]=line.split("|");
+  return {id:w,q:w,a:sup,tr:`${comp} · ${ru}`,pos:"",ex:ex.replace(sup,"___"),exFull:ex,exTr,group:"",
+          wrong:wrong?wrong.split(";"):supWrong(w,comp,sup)};
+});
+// Typical learner mistakes for a regular adjective: wrong ending, “most” with a short adjective, the comparative, a double superlative.
+function supWrong(w,comp,sup){
+  const core=sup.replace(/^the (most )?/,"");
+  return [...new Set([`the most ${w}`,`the ${w}est`,`the ${comp}`,`the most ${core}`,`the more ${w}`,`the most ${w}est`])]
+    .filter(f=>f!==sup);
+}
+
+/* Each deck: q = prompt side, a = answer side. Quiz goes q→a, and 30% of the time a→q (unless reverse:false).
+   Optional item fields: pos, ex (front example), exFull (full English example on the back), exTr (its translation),
+   tr (note under the answer), wrong (hand-picked wrong options for the quiz). */
 const DECKS = {
-  very:{key:"known", qLang:"en", aLang:"en",
+  very:{key:"known", qLang:"en", aLang:"en", trRuOnly:true,
         items:VERY.map(([w,s,ru])=>({id:w,q:"very "+w,a:s,tr:ru,pos:"",ex:"",exTr:"",group:""}))},
+  sup: {key:"known:sup", qLang:"en", aLang:"en", items:SUP, reverse:false},
   b1:  {key:"known:b1", qLang:"en", aLang:"ru", items:B1, byLetter:true}
 };
 
@@ -497,6 +574,7 @@ const I18N = {
      mistakes:"Ошибки:",footer:"Тапни карточку или нажми Пробел. В тесте — клавиши 1–4.",
      decks:{
        very:{title:"Very → Stronger",front:"Вместо",back:"Скажи",qFwd:"Сильная замена для",qRev:"Какое «very + …» означает"},
+       sup:{title:"Superlative",front:"Прилагательное",back:"Превосходная степень",qFwd:"Превосходная степень от"},
        b1:{title:"B1 Preliminary",front:"Слово",back:"Перевод",qFwd:"Переведи",qRev:"Как это по-английски?"}
      }},
  en:{deck:"Word set",letter:"Letter",all:"All",cards:"Flashcards",quiz:"Quiz",tapHint:"Tap to flip",again:"Again",know:"Got it",
@@ -507,6 +585,7 @@ const I18N = {
      mistakes:"Mistakes:",footer:"Tap the card or press Space. In the quiz use keys 1–4.",
      decks:{
        very:{title:"Very → Stronger",front:"Instead of",back:"Say",qFwd:"Stronger word for",qRev:"Which “very + …” means"},
+       sup:{title:"Superlative",front:"Adjective",back:"Superlative",qFwd:"Superlative of"},
        b1:{title:"B1 Preliminary",front:"Word",back:"Translation",qFwd:"Translate",qRev:"Which English word means"}
      }}
 };
@@ -548,14 +627,15 @@ function renderCard(){
   if(done){
     if(deck.length && k<n){deck=shuffle(deck.filter(x=>!known.has(x.id)));idx=0;return renderCard();}
     $("cMeta").textContent=""; $("cFront").textContent=t("allDone");
-    $("cPos").textContent=$("cEx").textContent=$("cBack").textContent=$("cTr").textContent=$("cExTr").textContent=""; return;
+    $("cPos").textContent=$("cEx").textContent=$("cBack").textContent=$("cTr").textContent=$("cExFull").textContent=$("cExTr").textContent=""; return;
   }
   const c=deck[idx];
   $("cMeta").textContent=t("card")(idx+1,deck.length);
   $("cFront").textContent=c.q; $("cFront").lang=D().qLang;
   $("cPos").textContent=c.pos; $("cEx").textContent=lines(c.ex);
   // delay back text swap so the answer doesn't flash during un-flip
-  setTimeout(()=>{$("cBack").textContent=c.a;$("cBack").lang=D().aLang;$("cTr").textContent=lang==="ru"&&c.tr||"";$("cExTr").textContent=lines(c.exTr);},150);
+  setTimeout(()=>{$("cBack").textContent=c.a;$("cBack").lang=D().aLang;$("cTr").textContent=D().trRuOnly&&lang!=="ru"?"":c.tr||"";
+    $("cExFull").textContent=lines(c.exFull||"");$("cExTr").textContent=lines(c.exTr);},150);
 }
 function flip(){ if(deck.length && idx<deck.length) $("card").classList.toggle("flipped"); }
 function answerCard(ok){
@@ -588,9 +668,11 @@ function distractors(x, items){
 function quizInit(){
   const items=pool();
   qs = shuffle(items).slice(0,QN).map(x=>{
-    const rev=Math.random()<.3; // 30%: reverse direction
-    const opts=shuffle([x, ...distractors(x,items)]);
-    return {x,rev,opts:opts.map(o=>rev?o.q:o.a),answer:rev?x.q:x.a};
+    const rev=D().reverse!==false && Math.random()<.3; // 30%: reverse direction
+    const answer=rev?x.q:x.a;
+    // hand-picked wrong forms (superlatives) or other items of the deck
+    const others=x.wrong&&!rev ? shuffle(x.wrong).slice(0,3) : distractors(x,items).map(o=>rev?o.q:o.a);
+    return {x,rev,opts:shuffle([answer,...others]),answer};
   });
   qi=0; score=0; mistakes=[];
   $("qPlay").hidden=false; $("qDone").hidden=true; renderQ();
@@ -603,6 +685,7 @@ function renderQ(){
   $("qPrompt").textContent=q.rev?td("qRev"):td("qFwd");
   $("qWord").textContent=q.rev?q.x.a:q.x.q; $("qWord").lang=q.rev?d.aLang:d.qLang;
   $("qPos").textContent=q.rev?"":q.x.pos;
+  $("qEx").textContent=!q.rev&&q.x.exFull?q.x.ex:""; // gapped sentence as a hint (superlatives)
   $("qNext").hidden=true;
   $("qOpts").replaceChildren(...q.opts.map((o,i)=>{
     const b=document.createElement("button"); b.className="opt";
@@ -635,7 +718,7 @@ $("qRestart").onclick=quizInit;
 function renderDeckPicker(){
   $("deck").replaceChildren(...Object.keys(DECKS).map(id=>
     Object.assign(document.createElement("option"),{value:id,textContent:I18N[lang].decks[id].title})));
-  $("deck").value=deckId;
+  $("deck").value=deckId; $("deckCur").textContent=td("title");
   document.title=td("title");
 }
 function renderLetters(){
