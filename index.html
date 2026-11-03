@@ -35,6 +35,14 @@ h1{margin:0;min-width:0}
 .lang{display:flex;flex:none;border:1px solid var(--line);border-radius:8px;overflow:hidden}
 .lang button{border:0;background:transparent;color:var(--muted);padding:6px 10px;font:inherit;font-size:13px;cursor:pointer}
 .lang button[aria-pressed="true"]{background:var(--text);color:var(--bg)}
+.letters{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:-4px 0}
+.letters::-webkit-scrollbar{display:none}
+.letters button{flex:none;display:flex;align-items:baseline;gap:6px;border:1px solid var(--line);background:transparent;color:var(--text);
+  border-radius:8px;padding:6px 12px;min-height:36px;font:inherit;font-size:15px;font-weight:600;cursor:pointer}
+.letters button small{font-size:12px;font-weight:400;color:var(--muted)}
+.letters button[aria-pressed="true"]{background:var(--text);border-color:var(--text);color:var(--bg)}
+.letters button[aria-pressed="true"] small{color:inherit;opacity:.7}
+.letters button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--line);padding:4px;border-radius:10px}
 .tabs button{border:0;border-radius:7px;padding:10px;font:inherit;font-weight:600;background:transparent;color:var(--muted);cursor:pointer}
 .tabs button[aria-selected="true"]{background:var(--surface);color:var(--text)}
@@ -55,7 +63,7 @@ h1{margin:0;min-width:0}
 .face.back .word{color:var(--accent)}
 .face .tr,.pos{color:var(--muted)}
 .pos{font-size:13px}
-.ex{color:var(--muted);font-style:italic;font-size:15px;max-width:100%}
+.ex{color:var(--muted);font-style:italic;font-size:15px;max-width:100%;white-space:pre-line}
 .pos:empty,.ex:empty,.face .tr:empty{display:none}
 .face .hint{position:absolute;bottom:14px;font-size:13px;color:var(--muted)}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -99,6 +107,8 @@ footer{color:var(--muted);font-size:12px;text-align:center}
     </div>
   </header>
 
+  <div class="letters" id="letters" role="group" hidden></div>
+
   <div class="tabs" role="tablist">
     <button role="tab" data-mode="cards" data-i18n="cards"></button>
     <button role="tab" data-mode="quiz" data-i18n="quiz"></button>
@@ -116,7 +126,7 @@ footer{color:var(--muted);font-size:12px;text-align:center}
             <span class="pos" id="cPos"></span><span class="ex" id="cEx" lang="en"></span>
             <span class="hint" data-i18n="tapHint"></span>
           </div>
-          <div class="face back"><span class="label" id="cBackLabel"></span><span class="word" id="cBack"></span><span class="tr" id="cTr" lang="ru"></span></div>
+          <div class="face back"><span class="label" id="cBackLabel"></span><span class="word" id="cBack"></span><span class="tr" id="cTr" lang="ru"></span><span class="ex" id="cExTr" lang="ru"></span></div>
         </div>
       </div>
       <div class="row">
@@ -168,318 +178,318 @@ const VERY = [
  ["interested","fascinated","очарованный"],["confused","bewildered","сбитый с толку"]
 ];
 
-// Cambridge B1 Preliminary vocabulary list, pp. 8–10 (“by …” – “cyclist”).
-// word | part of speech | Russian | examples (optional, “ · ”-separated)
+// Cambridge B1 Preliminary vocabulary list, pp. 8–10 (“by …” – “cyclist”). Letter sections are derived from the first character.
+// word | part of speech (+ usage note) | Russian | example(s) | example translation(s); multiple examples are “ · ”-separated
 // Synonyms share an identical Russian string on purpose, so the quiz never offers both as options.
 const B1 = `
-by|prep|у, возле; к (сроку); (сделано) кем-то
-by accident|prep phr|случайно
-by hand|prep phr|вручную
-by mistake|prep phr|по ошибке
-by name|prep phr|по имени
-bye|exclam|пока!
-cab|n|такси
-cabbage|n|капуста
-cabin|n|хижина; каюта
-cabinet|n|шкафчик
-cable|n|кабель, провод
-café|n|кафе
-cafeteria|n|кафетерий
-cake|n|торт, пирожное
-calculator|n|калькулятор
-calendar|n|календарь
-calf|n|телёнок; икра (ноги)
-call|n & v|звонок; звонить, звать
-call for|phr v|заходить за (кем-то)|I'll call for you at 7.
-call in|phr v|заглянуть, зайти|She called in to see a friend.
-calm|adj|спокойный
-camel|n|верблюд
-camera|n|фотоаппарат, камера
-camp|n & v|лагерь; жить в палатке
-camping|n|кемпинг, отдых с палатками
-campsite|n|палаточный лагерь
-can|n & mv|банка; мочь, уметь
-canal|n|канал (искусственный)
-cancel|v|отменять
-candidate|n|кандидат
-candle|n|свеча
-candy|n|конфеты (амер.)
-canteen|n|столовая
-cap|n|кепка; крышка
-capital|adj & n|столица; заглавный|capital city · capital letter · the capital of Italy
-captain|n|капитан
-car|n|машина, автомобиль
-card|n|открытка; карта|birthday card · credit card · card game
-cardboard|adj & n|картон; картонный
-care|n & v|забота; заботиться|take care of someone · to care about someone / something
-career|n|карьера
-careful|adj|осторожный, аккуратный
-carefully|adv|осторожно, внимательно
-careless|adj|небрежный, неосторожный
-car park|n|автостоянка|Am Eng: parking lot
-carpet|n|ковёр
-carrot|n|морковь
-carry|v|нести, носить
-carry on|phr v|продолжать|He carried on walking despite the rain.
-carry out|phr v|выполнять, осуществлять|She carried out the plan according to the instructions.
-cartoon|n|мультфильм; карикатура
-case|n|чемодан; случай|Would you like me to carry your case? · I'll make an exception in this case.
-cash|n|наличные
-cash machine|n|банкомат
-cashpoint|n|банкомат
-castle|n|замок
-casual|adj|повседневный|casual clothes
-cat|n|кошка
-catch|v|ловить; успеть (на транспорт)
-cathedral|n|собор
-cattle|n|крупный рогатый скот
-cave|n|пещера
-CD|n|компакт-диск
-CD player|n|CD-проигрыватель
-ceiling|n|потолок
-celebrate|v|праздновать
-celebration|n|празднование
-celebrity|n|знаменитость
-cell phone|n|мобильный телефон|Br Eng: mobile phone
-cent|n|цент
-centimetre|n|сантиметр|Am Eng: centimeter
-central|adj|центральный
-central heating|n|центральное отопление
-centre|n|центр|Am Eng: center
-century|n|век, столетие
-cereal|n|хлопья; злаки
-ceremony|n|церемония
-certain|adj|уверенный; определённый
-certainly|adv|конечно, безусловно|certainly (not)
-certificate|n|сертификат, свидетельство
-chain|n|цепь, цепочка
-chair|n|стул
-challenge|n & v|вызов, трудная задача; бросать вызов
-challenging|adj|трудный, требующий усилий
-champion|n|чемпион
-championship|n|чемпионат
-chance|n|шанс, возможность
-change|n & v|перемена; сдача; менять(ся)
-changing room|n|раздевалка; примерочная
-channel|n|канал (ТВ)
-chapter|n|глава
-character|n|персонаж; характер
-charge|n & v|плата; брать плату; заряжать
-charity|n|благотворительная организация|She works for a charity.
-charming|adj|очаровательный
-chat|n & v|беседа; болтать|to chat online
-chatroom|n|чат
-chat show|n|ток-шоу|Am Eng: talk show
-cheap|adj|дешёвый
-cheat|v|жульничать, списывать
-check|n & v|проверка; проверять
-check in|phr v|зарегистрироваться (в отеле, аэропорту)|They checked in to a hotel.
-check-in|n|стойка регистрации|Your keys are at the check-in desk.
-check out|phr v|выписаться (из отеля)|He checked out of the hotel at the end of his stay.
-checkout|n|касса (в магазине)
-cheek|n|щека
-cheerful|adj|весёлый, жизнерадостный
-cheers!|exclam|за здоровье!; спасибо! (разг.)
-cheese|n|сыр
-chef|n|шеф-повар
-chemist|n|аптека; аптекарь; химик
-chemistry|n|химия
-cheque|n|чек (банковский)
-chess|n|шахматы
-chest of drawers|n|комод
-chicken|n|курица
-child|n|ребёнок
-childhood|n|детство
-chill out|phr v|расслабиться, отдохнуть
-chilli|n|перец чили
-chin|n|подбородок
-chip|n|картофель фри|I love fish and chips.
-chocolate|n|шоколад
-choice|n|выбор
-choose|v|выбирать
-cinema|n|кинотеатр
-circle|n|круг
-circus|n|цирк
-city|n|город
-clap|v|хлопать (в ладоши)
-class|n|урок, занятие; класс|language class · first class, second class
-classical|adj|классический|classical music
-classmate|n|одноклассник
-classroom|n|классная комната
-clean|adj & v|чистый; убирать, чистить
-cleaner|n|уборщик
-clear|adj & v|ясный, понятный; убирать, расчищать
-clearly|adv|ясно, чётко
-clever|adj|умный
-click|n & v|щелчок; щёлкать (мышкой)
-cliff|n|утёс, скала
-climate|n|климат
-climate change|n|изменение климата
-climb|v|взбираться, лезть
-climbing|n|скалолазание
-clinic|n|клиника, поликлиника
-clock|n|часы (настенные)
-close|adj, adv & v|близкий; близко; закрывать
-closed|adj|закрытый
-clothes|n pl|одежда
-clothing|n|одежда
-cloud|n|облако
-cloudy|adj|облачный
-clown|n|клоун
-club|n|клуб|to join a club
-coach|n|тренер; междугородний автобус
-coast|n|побережье
-coat|n|пальто
-coconut|n|кокос
-cod|n|треска
-coffee|n|кофе
-coin|n|монета
-cola|n|кола
-cold|adj & n|холодный; простуда
-collar|n|воротник; ошейник
-colleague|n|коллега
-collect|v|собирать, коллекционировать
-collection|n|коллекция
-college|n|колледж
-colour|n & v|цвет; раскрашивать
-colourful|adj|красочный, яркий
-comb|n & v|расчёска; причёсывать
-come|v|приходить
-comedy|n|комедия
-come on|phr v|давай!, скорее!|Come on or we'll miss the bus.
-comfort|n|комфорт; утешение
-comfortable|adj|удобный, комфортный
-comment|n & v|комментарий; комментировать|I'm going to comment on the blogpost. · Please leave comments below.
-comic|adj & n|комический; комикс
-comma|n|запятая
-common|adj|общий; распространённый|a common surname · have something in common
-communicate|v|общаться
-communication|n|общение, связь
-company|n|компания
-compare|v|сравнивать
-compete|v|соревноваться
-competition|n|соревнование, конкурс
-competitor|n|участник соревнования; конкурент
-complain|v|жаловаться
-complaint|n|жалоба
-complete|adj & v|полный, законченный; завершать
-completely|adv|полностью
-complicated|adj|сложный, запутанный
-composition|n|сочинение; композиция
-computer|n|компьютер
-concentrate|v|сосредоточиться
-concert|n|концерт
-conclusion|n|вывод, заключение
-condition|n|состояние; условие|in good condition
-conference|n|конференция
-confident|adj|уверенный в себе
-confirm|v|подтверждать
-confused|adj|сбитый с толку
-confusing|adj|непонятный, сбивающий с толку
-congratulations!|exclam|поздравляю!
-connect|v|соединять, подключать
-connection|n|связь, соединение
-consider|v|рассматривать, обдумывать
-consist|v|состоять (из)
-consonant|n|согласный звук
-contact|n & v|контакт; связываться
-contain|v|содержать
-contents|n|содержание, содержимое
-contest|n|конкурс, состязание
-continent|n|континент
-continue|v|продолжать
-contract|n|контракт, договор
-control|n & v|управление; пульт; контролировать|a remote control · Control your dog!
-convenient|adj|удобный (по времени, месту)
-conversation|n|разговор
-convince|v|убеждать
-cook|n & v|повар; готовить
-cooker|n|плита
-cookery|n|кулинария
-cookie|n|печенье (амер.)|Br Eng: biscuit
-cooking|n|готовка, приготовление еды
-cool|adj, exclam & v|прохладный; классно!; охлаждать
-copy|n & v|копия; копировать
-corn|n|кукуруза; зерно
-corner|n|угол
-correct|adj|правильный
-correction|n|исправление
-cost|n & v|стоимость; стоить
-costume|n|костюм|I forgot my swimming costume. · national costume · a Halloween costume
-cosy|adj|уютный
-cottage|n|коттедж, загородный домик
-cotton|n|хлопок
-cough|n & v|кашель; кашлять
-could|mv|мог бы
-count|v|считать
-country|n|страна
-countryside|n|сельская местность
-couple|n|пара
-courage|n|смелость, мужество
-course|n|курс; блюдо|English course · main course · of course (exclam)
-court|n|суд; корт|law court · tennis court
-cousin|n|двоюродный брат / сестра
-cover|n & v|обложка, крышка; покрывать
-cow|n|корова
-crash|n & v|авария; разбиться, врезаться
-cream|adj & n|сливки, крем; кремовый
-create|v|создавать
-creative|adj|творческий
-creature|n|существо
-credit|n|кредит
-credit card|n|кредитная карта
-crew|n|экипаж, команда|cabin crew
-cricket|n|крикет
-crime|n|преступление
-criminal|n|преступник
-crop|n|урожай; сельхозкультура
-cross|n & v|крест; пересекать
-crossing|n|переход|pedestrian crossing
-cross out|phr v|вычеркнуть|Cross it out and write it again.
-crossroads|n|перекрёсток
-crowd|n|толпа
-crowded|adj|переполненный, людный
-cruel|adj|жестокий
-cruise|n|круиз
-cry|n & v|крик, плач; плакать, кричать
-cucumber|n|огурец
-cultural|adj|культурный
-culture|n|культура
-cup|n|чашка
-cupboard|n|шкаф (кухонный)
-cure|n & v|лекарство, излечение; вылечить
-curious|adj|любопытный
-curiously|adv|с любопытством|'Why?' she asked him curiously.
-curly|adj|кудрявый
-currency|n|валюта
-curriculum|n|учебная программа
-curry|n|карри
-curtain|n|штора, занавеска
-cushion|n|диванная подушка
-custom|n|обычай
-customer|n|клиент, покупатель
-customs|n pl|таможня|I work as a customs officer.
-cut|n & v|порез; резать
-cute|adj|милый
-cut up|phr v|нарезать|She cut up the cake into small pieces.
-CV|n|резюме|Curriculum Vitae
-cycle|n & v|цикл; ездить на велосипеде
-cycling|n|езда на велосипеде, велоспорт
-cyclist|n|велосипедист
+by|prep|у, возле; к (сроку); (сделано) кем-то|Please finish it by Friday.|Пожалуйста, закончи это к пятнице.
+by accident|prep phr|случайно|I deleted the photo by accident.|Я случайно удалил фото.
+by hand|prep phr|вручную|This card was made by hand.|Эта открытка сделана вручную.
+by mistake|prep phr|по ошибке|He took my bag by mistake.|Он по ошибке взял мою сумку.
+by name|prep phr|по имени|The teacher knows every student by name.|Учитель знает каждого ученика по имени.
+bye|exclam|пока!|Bye! See you tomorrow.|Пока! Увидимся завтра.
+cab|n|такси|Let's take a cab to the station.|Давай возьмём такси до вокзала.
+cabbage|n|капуста|My grandmother makes soup with cabbage.|Бабушка варит суп с капустой.
+cabin|n|хижина; каюта|We stayed in a small cabin in the forest.|Мы жили в маленькой хижине в лесу.
+cabinet|n|шкафчик|The cups are in the kitchen cabinet.|Чашки в кухонном шкафчике.
+cable|n|кабель, провод|I need a longer cable for my laptop.|Мне нужен провод подлиннее для ноутбука.
+café|n|кафе|Let's meet at the café on the corner.|Давай встретимся в кафе на углу.
+cafeteria|n|кафетерий|We have lunch in the school cafeteria.|Мы обедаем в школьном кафетерии.
+cake|n|торт, пирожное|Mum made a chocolate cake for my birthday.|Мама испекла шоколадный торт на мой день рождения.
+calculator|n|калькулятор|You can't use a calculator in this test.|На этом тесте нельзя пользоваться калькулятором.
+calendar|n|календарь|I wrote the date in my calendar.|Я записал дату в календарь.
+calf|n|телёнок; икра (ноги)|The calf stayed close to its mother.|Телёнок держался рядом с матерью.
+call|n & v|звонок; звонить, звать|I'll call you this evening.|Я позвоню тебе вечером.
+call for|phr v|заходить за (кем-то)|I'll call for you at 7.|Я зайду за тобой в 7.
+call in|phr v|заглянуть, зайти|She called in to see a friend.|Она заглянула к подруге.
+calm|adj|спокойный|Stay calm and listen to me.|Сохраняй спокойствие и послушай меня.
+camel|n|верблюд|We rode a camel in the desert.|Мы катались на верблюде в пустыне.
+camera|n|фотоаппарат, камера|Don't forget your camera!|Не забудь фотоаппарат!
+camp|n & v|лагерь; жить в палатке|We camped by the lake for three nights.|Мы три ночи жили в палатке у озера.
+camping|n|кемпинг, отдых с палатками|We go camping every summer.|Каждое лето мы ходим в поход с палатками.
+campsite|n|палаточный лагерь|The campsite has hot showers.|В палаточном лагере есть горячий душ.
+can|n & mv|банка; мочь, уметь|Can you swim? · a can of cola|Ты умеешь плавать? · банка колы
+canal|n|канал (искусственный)|There are many canals in Venice.|В Венеции много каналов.
+cancel|v|отменять|The match was cancelled because of the rain.|Матч отменили из-за дождя.
+candidate|n|кандидат|There are three candidates for the job.|На эту работу три кандидата.
+candle|n|свеча|She lit a candle on the table.|Она зажгла свечу на столе.
+candy|n · Am Eng|конфеты|Children love candy.|Дети любят конфеты.
+canteen|n|столовая|The food in the canteen is cheap.|Еда в столовой дешёвая.
+cap|n|кепка; крышка|He always wears a baseball cap.|Он всегда носит бейсболку.
+capital|adj & n|столица; заглавный|capital city · capital letter · the capital of Italy|столица · заглавная буква · столица Италии
+captain|n|капитан|She is the captain of our team.|Она капитан нашей команды.
+car|n|машина, автомобиль|My dad drives an old car.|Мой папа ездит на старой машине.
+card|n|открытка; карта|birthday card · credit card · card game|открытка на день рождения · кредитная карта · карточная игра
+cardboard|adj & n|картон; картонный|Put the books in a cardboard box.|Положи книги в картонную коробку.
+care|n & v|забота; заботиться|take care of someone · to care about someone / something|заботиться о ком-то · переживать о ком-то / чём-то
+career|n|карьера|She wants a career in medicine.|Она хочет сделать карьеру в медицине.
+careful|adj|осторожный, аккуратный|Be careful, the floor is wet.|Осторожно, пол мокрый.
+carefully|adv|осторожно, внимательно|Read the instructions carefully.|Внимательно прочитай инструкцию.
+careless|adj|небрежный, неосторожный|It was a careless mistake.|Это была ошибка по невнимательности.
+car park|n · Br Eng (Am Eng: parking lot)|автостоянка|We left the car in the car park.|Мы оставили машину на стоянке.
+carpet|n|ковёр|There's a red carpet in the living room.|В гостиной лежит красный ковёр.
+carrot|n|морковь|Rabbits love carrots.|Кролики любят морковку.
+carry|v|нести, носить|Can you help me carry this bag?|Поможешь мне донести эту сумку?
+carry on|phr v|продолжать|He carried on walking despite the rain.|Он продолжал идти, несмотря на дождь.
+carry out|phr v|выполнять, осуществлять|She carried out the plan according to the instructions.|Она выполнила план по инструкции.
+cartoon|n|мультфильм; карикатура|My little brother watches cartoons every morning.|Мой младший брат каждое утро смотрит мультики.
+case|n|чемодан; случай|Would you like me to carry your case? · I'll make an exception in this case.|Хочешь, я понесу твой чемодан? · В этом случае я сделаю исключение.
+cash|n|наличные|Do you want to pay by card or in cash?|Вы будете платить картой или наличными?
+cash machine|n|банкомат|Is there a cash machine near here?|Здесь поблизости есть банкомат?
+cashpoint|n|банкомат|I need to find a cashpoint.|Мне нужно найти банкомат.
+castle|n|замок|We visited an old castle in Scotland.|Мы побывали в старом замке в Шотландии.
+casual|adj|повседневный|I prefer casual clothes at the weekend.|На выходных я предпочитаю повседневную одежду.
+cat|n|кошка|Our cat sleeps on my bed.|Наша кошка спит на моей кровати.
+catch|v|ловить; успеть (на транспорт)|We ran to catch the bus.|Мы побежали, чтобы успеть на автобус.
+cathedral|n|собор|The cathedral is in the centre of the city.|Собор находится в центре города.
+cattle|n|крупный рогатый скот|The farmer keeps cattle and sheep.|Фермер держит коров и овец.
+cave|n|пещера|They found old paintings in the cave.|В пещере нашли древние рисунки.
+CD|n|компакт-диск|My parents still have lots of CDs.|У моих родителей до сих пор много дисков.
+CD player|n|CD-проигрыватель|The CD player in the car is broken.|CD-проигрыватель в машине сломан.
+ceiling|n|потолок|There is a spider on the ceiling.|На потолке паук.
+celebrate|v|праздновать|How do you celebrate New Year?|Как вы празднуете Новый год?
+celebration|n|празднование|There was a big celebration after the match.|После матча было большое празднование.
+celebrity|n|знаменитость|She took a photo with a celebrity.|Она сфотографировалась со знаменитостью.
+cell phone|n · Am Eng (Br Eng: mobile phone)|мобильный телефон|Please turn off your cell phone.|Пожалуйста, выключите мобильный телефон.
+cent|n|цент|This sweet costs fifty cents.|Эта конфета стоит пятьдесят центов.
+centimetre|n · Br Eng (Am Eng: centimeter)|сантиметр|The line is ten centimetres long.|Длина линии — десять сантиметров.
+central|adj|центральный|Our hotel is in central London.|Наш отель в центре Лондона.
+central heating|n|центральное отопление|The flat has central heating.|В квартире есть центральное отопление.
+centre|n · Br Eng (Am Eng: center)|центр|Let's go to the shopping centre.|Пойдём в торговый центр.
+century|n|век, столетие|This church was built in the 15th century.|Эту церковь построили в XV веке.
+cereal|n|хлопья; злаки|I have cereal with milk for breakfast.|На завтрак я ем хлопья с молоком.
+ceremony|n|церемония|The wedding ceremony was beautiful.|Свадебная церемония была красивой.
+certain|adj|уверенный; определённый|Are you certain you locked the door?|Ты уверен, что запер дверь?
+certainly|adv|конечно, безусловно|"Can you help me?" "Certainly!" · certainly not|«Поможешь мне?» — «Конечно!» · конечно нет
+certificate|n|сертификат, свидетельство|You will get a certificate at the end of the course.|В конце курса ты получишь сертификат.
+chain|n|цепь, цепочка|She wears a gold chain.|Она носит золотую цепочку.
+chair|n|стул|Please sit on this chair.|Садись, пожалуйста, на этот стул.
+challenge|n & v|вызов, трудная задача; бросать вызов|Learning Chinese is a real challenge.|Учить китайский — настоящее испытание.
+challenging|adj|трудный, требующий усилий|The exam was challenging but fair.|Экзамен был трудным, но честным.
+champion|n|чемпион|He is the national tennis champion.|Он чемпион страны по теннису.
+championship|n|чемпионат|Our team won the championship.|Наша команда выиграла чемпионат.
+chance|n|шанс, возможность|This is your last chance.|Это твой последний шанс.
+change|n & v|перемена; сдача; менять(ся)|Keep the change. · The town has changed a lot.|Сдачи не надо. · Город сильно изменился.
+changing room|n|раздевалка; примерочная|You can try it on in the changing room.|Можете примерить в примерочной.
+channel|n|канал (ТВ)|What's on the other channel?|Что идёт на другом канале?
+chapter|n|глава|I've read the first chapter.|Я прочитал первую главу.
+character|n|персонаж; характер|Who is your favourite character in the book?|Кто твой любимый персонаж в книге?
+charge|n & v|плата; брать плату; заряжать|I need to charge my phone.|Мне нужно зарядить телефон.
+charity|n|благотворительная организация|She works for a charity.|Она работает в благотворительной организации.
+charming|adj|очаровательный|What a charming little village!|Какая очаровательная деревушка!
+chat|n & v|беседа; болтать|We like to chat online in the evenings.|Вечерами мы любим болтать онлайн.
+chatroom|n|чат|I met him in a chatroom for gamers.|Я познакомился с ним в чате для геймеров.
+chat show|n · Br Eng (Am Eng: talk show)|ток-шоу|She was a guest on a chat show.|Она была гостьей ток-шоу.
+cheap|adj|дешёвый|These shoes were really cheap.|Эти туфли были очень дешёвыми.
+cheat|v|жульничать, списывать|Don't cheat in the exam!|Не списывай на экзамене!
+check|n & v|проверка; проверять|Check your answers before you finish.|Проверь ответы, прежде чем закончить.
+check in|phr v|зарегистрироваться (в отеле, аэропорту)|They checked in to a hotel.|Они заселились в отель.
+check-in|n|стойка регистрации|Your keys are at the check-in desk.|Ваши ключи на стойке регистрации.
+check out|phr v|выписаться (из отеля)|He checked out of the hotel at the end of his stay.|В конце поездки он выписался из отеля.
+checkout|n|касса (в магазине)|There was a long queue at the checkout.|На кассе была длинная очередь.
+cheek|n|щека|She kissed him on the cheek.|Она поцеловала его в щёку.
+cheerful|adj|весёлый, жизнерадостный|He is always cheerful in the morning.|По утрам он всегда весёлый.
+cheers!|exclam|за здоровье!; спасибо! (разг.)|"Here's your coffee." "Cheers!"|«Вот твой кофе». — «Спасибо!»
+cheese|n|сыр|I'd like a cheese sandwich, please.|Мне бутерброд с сыром, пожалуйста.
+chef|n|шеф-повар|The chef cooked a fantastic dinner.|Шеф-повар приготовил потрясающий ужин.
+chemist|n|аптека; аптекарь; химик|You can buy it at the chemist's.|Это можно купить в аптеке.
+chemistry|n|химия|Chemistry is my favourite subject.|Химия — мой любимый предмет.
+cheque|n|чек (банковский)|Can I pay by cheque?|Можно расплатиться чеком?
+chess|n|шахматы|Do you know how to play chess?|Ты умеешь играть в шахматы?
+chest of drawers|n|комод|My socks are in the chest of drawers.|Мои носки в комоде.
+chicken|n|курица|We had roast chicken for dinner.|На ужин у нас была запечённая курица.
+child|n|ребёнок|When I was a child, I lived in a village.|В детстве я жил в деревне.
+childhood|n|детство|I had a happy childhood.|У меня было счастливое детство.
+chill out|phr v|расслабиться, отдохнуть|Let's just chill out at home tonight.|Давай сегодня просто отдохнём дома.
+chilli|n|перец чили|This soup has too much chilli in it.|В этом супе слишком много чили.
+chin|n|подбородок|He has a small beard on his chin.|У него на подбородке небольшая бородка.
+chip|n|картофель фри|I love fish and chips.|Я обожаю рыбу с картошкой фри.
+chocolate|n|шоколад|Would you like some chocolate?|Хочешь шоколада?
+choice|n|выбор|You have no choice.|У тебя нет выбора.
+choose|v|выбирать|It's hard to choose a present for him.|Трудно выбрать для него подарок.
+cinema|n|кинотеатр|Let's go to the cinema tonight.|Пойдём сегодня в кино.
+circle|n|круг|Draw a circle on the paper.|Нарисуй на бумаге круг.
+circus|n|цирк|The children loved the clowns at the circus.|Детям понравились клоуны в цирке.
+city|n|город|Tokyo is a huge city.|Токио — огромный город.
+clap|v|хлопать (в ладоши)|Everyone clapped at the end of the show.|В конце шоу все хлопали.
+class|n|урок, занятие; класс|language class · first class, second class|урок языка · первый класс, второй класс
+classical|adj|классический|My mum loves classical music.|Моя мама любит классическую музыку.
+classmate|n|одноклассник|My classmate helped me with my homework.|Одноклассник помог мне с домашним заданием.
+classroom|n|классная комната|Our classroom is on the second floor.|Наш класс на втором этаже.
+clean|adj & v|чистый; убирать, чистить|I clean my room every Saturday.|Я убираю свою комнату каждую субботу.
+cleaner|n|уборщик|The cleaner comes twice a week.|Уборщица приходит два раза в неделю.
+clear|adj & v|ясный, понятный; убирать, расчищать|Is that clear? · Please clear the table.|Это понятно? · Убери, пожалуйста, со стола.
+clearly|adv|ясно, чётко|Please speak clearly.|Говорите, пожалуйста, чётко.
+clever|adj|умный|She's a very clever girl.|Она очень умная девочка.
+click|n & v|щелчок; щёлкать (мышкой)|Click on the link to download the file.|Нажми на ссылку, чтобы скачать файл.
+cliff|n|утёс, скала|The house stands on top of a cliff.|Дом стоит на вершине утёса.
+climate|n|климат|The climate here is warm and dry.|Климат здесь тёплый и сухой.
+climate change|n|изменение климата|Climate change is a serious problem.|Изменение климата — серьёзная проблема.
+climb|v|взбираться, лезть|The cat climbed up the tree.|Кошка залезла на дерево.
+climbing|n|скалолазание|Climbing is my favourite sport.|Скалолазание — мой любимый спорт.
+clinic|n|клиника, поликлиника|I have an appointment at the clinic.|У меня запись в поликлинику.
+clock|n|часы (настенные)|The clock on the wall is slow.|Часы на стене отстают.
+close|adj, adv & v|близкий; близко; закрывать|Please close the window. · She's my close friend.|Закрой, пожалуйста, окно. · Она моя близкая подруга.
+closed|adj|закрытый|The shop is closed on Sundays.|По воскресеньям магазин закрыт.
+clothes|n pl|одежда|I need to buy some new clothes.|Мне нужно купить новую одежду.
+clothing|n|одежда|Take warm clothing for the trip.|Возьми в поездку тёплую одежду.
+cloud|n|облако|There isn't a cloud in the sky.|На небе ни облачка.
+cloudy|adj|облачный|It's cloudy today, but it isn't raining.|Сегодня облачно, но дождя нет.
+clown|n|клоун|The clown made everyone laugh.|Клоун всех рассмешил.
+club|n|клуб|I want to join a chess club.|Я хочу вступить в шахматный клуб.
+coach|n|тренер; междугородний автобус|Our coach makes us run every day. · We went to London by coach.|Тренер заставляет нас бегать каждый день. · Мы поехали в Лондон на автобусе.
+coast|n|побережье|We drove along the coast.|Мы ехали вдоль побережья.
+coat|n|пальто|Put on your coat, it's cold.|Надень пальто, холодно.
+coconut|n|кокос|Coconut milk is great in a curry.|Кокосовое молоко отлично подходит для карри.
+cod|n|треска|Fish and chips are usually made with cod.|Рыбу с картошкой фри обычно готовят из трески.
+coffee|n|кофе|I drink a cup of coffee every morning.|Каждое утро я выпиваю чашку кофе.
+coin|n|монета|I found an old coin in the garden.|Я нашёл в саду старую монету.
+cola|n|кола|Can I have a cola, please?|Можно мне колу, пожалуйста?
+cold|adj & n|холодный; простуда|I've got a cold. · It's cold outside.|Я простудился. · На улице холодно.
+collar|n|воротник; ошейник|The dog has a red collar.|У собаки красный ошейник.
+colleague|n|коллега|I had lunch with a colleague.|Я пообедал с коллегой.
+collect|v|собирать, коллекционировать|My brother collects stamps.|Мой брат собирает марки.
+collection|n|коллекция|She has a big collection of books.|У неё большая коллекция книг.
+college|n|колледж|My sister is at college.|Моя сестра учится в колледже.
+colour|n & v|цвет; раскрашивать|What's your favourite colour?|Какой твой любимый цвет?
+colourful|adj|красочный, яркий|She always wears colourful clothes.|Она всегда носит яркую одежду.
+comb|n & v|расчёска; причёсывать|Comb your hair before school.|Причешись перед школой.
+come|v|приходить|Can you come to my party?|Ты сможешь прийти ко мне на вечеринку?
+comedy|n|комедия|We watched a funny comedy last night.|Вчера вечером мы смотрели смешную комедию.
+come on|phr v|давай!, скорее!|Come on or we'll miss the bus.|Давай быстрее, а то опоздаем на автобус.
+comfort|n|комфорт; утешение|They live in comfort.|Они живут в комфорте.
+comfortable|adj|удобный, комфортный|This sofa is very comfortable.|Этот диван очень удобный.
+comment|n & v|комментарий; комментировать|I'm going to comment on the blogpost. · Please leave comments below.|Я собираюсь прокомментировать пост в блоге. · Пожалуйста, оставляйте комментарии ниже.
+comic|adj & n|комический; комикс|He reads comics in his free time.|В свободное время он читает комиксы.
+comma|n|запятая|Put a comma after this word.|Поставь запятую после этого слова.
+common|adj|общий; распространённый|Smith is a common surname. · We have a lot in common.|Смит — распространённая фамилия. · У нас много общего.
+communicate|v|общаться|We communicate by email.|Мы общаемся по электронной почте.
+communication|n|общение, связь|Good communication is important in a team.|В команде важно хорошее общение.
+company|n|компания|My dad works for a big company.|Мой папа работает в крупной компании.
+compare|v|сравнивать|Compare your answers with a partner.|Сравни свои ответы с напарником.
+compete|v|соревноваться|Ten teams will compete in the final.|В финале будут соревноваться десять команд.
+competition|n|соревнование, конкурс|She won a singing competition.|Она победила в конкурсе пения.
+competitor|n|участник соревнования; конкурент|There were 50 competitors in the race.|В забеге было 50 участников.
+complain|v|жаловаться|He always complains about the food.|Он вечно жалуется на еду.
+complaint|n|жалоба|I want to make a complaint.|Я хочу подать жалобу.
+complete|adj & v|полный, законченный; завершать|Complete the sentences with one word.|Закончи предложения одним словом.
+completely|adv|полностью|I completely forgot about it.|Я совершенно забыл об этом.
+complicated|adj|сложный, запутанный|The rules of this game are complicated.|Правила этой игры сложные.
+composition|n|сочинение; композиция|Write a composition about your holiday.|Напиши сочинение о своих каникулах.
+computer|n|компьютер|I do my homework on the computer.|Я делаю домашнее задание на компьютере.
+concentrate|v|сосредоточиться|I can't concentrate with this noise.|Я не могу сосредоточиться при таком шуме.
+concert|n|концерт|We're going to a rock concert on Friday.|В пятницу мы идём на рок-концерт.
+conclusion|n|вывод, заключение|What conclusion can we make?|Какой вывод мы можем сделать?
+condition|n|состояние; условие|The bike is old but in good condition.|Велосипед старый, но в хорошем состоянии.
+conference|n|конференция|She is speaking at a conference in Berlin.|Она выступает на конференции в Берлине.
+confident|adj|уверенный в себе|I feel confident about the exam.|Я спокоен и уверен насчёт экзамена.
+confirm|v|подтверждать|Please confirm your booking by email.|Пожалуйста, подтвердите бронирование по электронной почте.
+confused|adj|сбитый с толку|I'm confused — can you explain again?|Я запутался, можешь объяснить ещё раз?
+confusing|adj|непонятный, сбивающий с толку|The instructions were really confusing.|Инструкция была очень запутанной.
+congratulations!|exclam|поздравляю!|Congratulations on passing your exam!|Поздравляю со сдачей экзамена!
+connect|v|соединять, подключать|Connect your phone to the Wi-Fi.|Подключи телефон к Wi-Fi.
+connection|n|связь, соединение|The internet connection is very slow.|Интернет-соединение очень медленное.
+consider|v|рассматривать, обдумывать|We are considering moving to another city.|Мы подумываем о переезде в другой город.
+consist|v|состоять (из)|The test consists of three parts.|Тест состоит из трёх частей.
+consonant|n|согласный звук|"B" and "C" are consonants.|«B» и «C» — согласные.
+contact|n & v|контакт; связываться|Contact me if you have any questions.|Свяжись со мной, если будут вопросы.
+contain|v|содержать|This drink contains a lot of sugar.|В этом напитке много сахара.
+contents|n|содержание, содержимое|Look at the contents page first.|Сначала посмотри на страницу с содержанием.
+contest|n|конкурс, состязание|He entered a photo contest.|Он участвовал в фотоконкурсе.
+continent|n|континент|Africa is a huge continent.|Африка — огромный континент.
+continue|v|продолжать|Please continue reading.|Пожалуйста, продолжайте читать.
+contract|n|контракт, договор|She signed a two-year contract.|Она подписала контракт на два года.
+control|n & v|управление; пульт; контролировать|Where's the remote control? · Control your dog!|Где пульт? · Следите за своей собакой!
+convenient|adj|удобный (по времени, месту)|Is 5 o'clock convenient for you?|Тебе удобно в 5 часов?
+conversation|n|разговор|We had a long conversation on the phone.|Мы долго разговаривали по телефону.
+convince|v|убеждать|I convinced my parents to buy a dog.|Я убедил родителей купить собаку.
+cook|n & v|повар; готовить|My dad cooks dinner on Sundays.|По воскресеньям ужин готовит папа.
+cooker|n|плита|Put the pan on the cooker.|Поставь сковородку на плиту.
+cookery|n|кулинария|I'm taking a cookery course.|Я хожу на кулинарные курсы.
+cookie|n · Am Eng (Br Eng: biscuit)|печенье|She baked some chocolate cookies.|Она испекла шоколадное печенье.
+cooking|n|готовка, приготовление еды|I love my grandma's cooking.|Обожаю, как готовит моя бабушка.
+cool|adj, exclam & v|прохладный; классно!; охлаждать|It's cool in the evenings. · Your new bike is cool!|По вечерам прохладно. · Классный у тебя новый велосипед!
+copy|n & v|копия; копировать|Don't copy your friend's homework.|Не списывай домашнее задание у друга.
+corn|n|кукуруза; зерно|We had grilled corn at the barbecue.|На барбекю у нас была жареная кукуруза.
+corner|n|угол|The bank is on the corner of the street.|Банк на углу улицы.
+correct|adj|правильный|Is this answer correct?|Этот ответ правильный?
+correction|n|исправление|The teacher made corrections in red pen.|Учитель сделал исправления красной ручкой.
+cost|n & v|стоимость; стоить|How much does this T-shirt cost?|Сколько стоит эта футболка?
+costume|n|костюм|I forgot my swimming costume. · national costume · a Halloween costume|Я забыл купальник. · национальный костюм · костюм на Хэллоуин
+cosy|adj|уютный|Our living room is small but cosy.|Наша гостиная маленькая, но уютная.
+cottage|n|коттедж, загородный домик|They have a cottage in the countryside.|У них домик за городом.
+cotton|n|хлопок|This shirt is made of cotton.|Эта рубашка из хлопка.
+cough|n & v|кашель; кашлять|He has a bad cough.|У него сильный кашель.
+could|mv|мог бы|Could you open the window, please?|Не мог бы ты открыть окно?
+count|v|считать|Can you count to ten in English?|Ты умеешь считать до десяти по-английски?
+country|n|страна|Which country are you from?|Из какой ты страны?
+countryside|n|сельская местность|We spent the weekend in the countryside.|Мы провели выходные за городом.
+couple|n|пара|A young couple lives next door. · a couple of days|По соседству живёт молодая пара. · пара дней
+courage|n|смелость, мужество|It takes courage to say sorry.|Чтобы извиниться, нужна смелость.
+course|n|курс; блюдо|English course · main course · of course (exclam)|курс английского · основное блюдо · конечно
+court|n|суд; корт|law court · tennis court|суд · теннисный корт
+cousin|n|двоюродный брат / сестра|My cousin lives in Canada.|Мой двоюродный брат живёт в Канаде.
+cover|n & v|обложка, крышка; покрывать|Snow covered the mountains. · I like the cover of this book.|Снег покрыл горы. · Мне нравится обложка этой книги.
+cow|n|корова|The cows are in the field.|Коровы в поле.
+crash|n & v|авария; разбиться, врезаться|Nobody was hurt in the crash.|В аварии никто не пострадал.
+cream|adj & n|сливки, крем; кремовый|Would you like cream in your coffee?|Добавить сливки в кофе?
+create|v|создавать|She created her own website.|Она создала собственный сайт.
+creative|adj|творческий|He's very creative — he writes songs.|Он очень творческий — пишет песни.
+creature|n|существо|Dolphins are beautiful creatures.|Дельфины — прекрасные существа.
+credit|n|кредит|They bought the car on credit.|Они купили машину в кредит.
+credit card|n|кредитная карта|Can I pay by credit card?|Можно заплатить кредитной картой?
+crew|n|экипаж, команда|The cabin crew served drinks.|Бортпроводники разнесли напитки.
+cricket|n|крикет|Cricket is very popular in India.|Крикет очень популярен в Индии.
+crime|n|преступление|Crime in the city has gone down.|Преступность в городе снизилась.
+criminal|n|преступник|The police caught the criminal.|Полиция поймала преступника.
+crop|n|урожай; сельхозкультура|Rice is the main crop here.|Рис — главная сельхозкультура здесь.
+cross|n & v|крест; пересекать|Look both ways before you cross the road.|Посмотри в обе стороны, прежде чем переходить дорогу.
+crossing|n|переход|Cross the road at the pedestrian crossing.|Переходи дорогу по пешеходному переходу.
+cross out|phr v|вычеркнуть|Cross it out and write it again.|Зачеркни и напиши заново.
+crossroads|n|перекрёсток|Turn left at the crossroads.|На перекрёстке поверни налево.
+crowd|n|толпа|A huge crowd watched the match.|Матч смотрела огромная толпа.
+crowded|adj|переполненный, людный|The bus was very crowded.|Автобус был переполнен.
+cruel|adj|жестокий|Don't be cruel to animals.|Не будь жестоким к животным.
+cruise|n|круиз|They went on a cruise around the Mediterranean.|Они отправились в круиз по Средиземному морю.
+cry|n & v|крик, плач; плакать, кричать|The baby started to cry.|Малыш начал плакать.
+cucumber|n|огурец|I'd like a salad with tomato and cucumber.|Мне салат с помидором и огурцом.
+cultural|adj|культурный|There are many cultural events in the city.|В городе много культурных мероприятий.
+culture|n|культура|I'm interested in Japanese culture.|Мне интересна японская культура.
+cup|n|чашка|Would you like a cup of tea?|Хочешь чашку чая?
+cupboard|n|шкаф (кухонный)|The plates are in the cupboard.|Тарелки в шкафу.
+cure|n & v|лекарство, излечение; вылечить|There is no cure for the common cold.|От обычной простуды нет лекарства.
+curious|adj|любопытный|Cats are very curious animals.|Кошки — очень любопытные животные.
+curiously|adv|с любопытством|'Why?' she asked him curiously.|«Почему?» — с любопытством спросила она.
+curly|adj|кудрявый|She has long curly hair.|У неё длинные кудрявые волосы.
+currency|n|валюта|The currency of Japan is the yen.|Валюта Японии — иена.
+curriculum|n|учебная программа|Music is part of the school curriculum.|Музыка входит в школьную программу.
+curry|n|карри|We ordered a chicken curry.|Мы заказали карри с курицей.
+curtain|n|штора, занавеска|Close the curtains, please.|Задёрни, пожалуйста, шторы.
+cushion|n|диванная подушка|There are lots of cushions on the sofa.|На диване много подушек.
+custom|n|обычай|It's an old custom in our family.|Это старый обычай в нашей семье.
+customer|n|клиент, покупатель|The shop was full of customers.|Магазин был полон покупателей.
+customs|n pl|таможня|I work as a customs officer.|Я работаю таможенником.
+cut|n & v|порез; резать|I cut my finger with a knife.|Я порезал палец ножом.
+cute|adj|милый|What a cute puppy!|Какой милый щенок!
+cut up|phr v|нарезать|She cut up the cake into small pieces.|Она нарезала торт на маленькие кусочки.
+CV|n · Curriculum Vitae|резюме|Send us your CV by email.|Пришлите нам своё резюме по электронной почте.
+cycle|n & v|цикл; ездить на велосипеде|I cycle to school every day.|Я каждый день езжу в школу на велосипеде.
+cycling|n|езда на велосипеде, велоспорт|Cycling is good for your health.|Езда на велосипеде полезна для здоровья.
+cyclist|n|велосипедист|The road is dangerous for cyclists.|Эта дорога опасна для велосипедистов.
 `.trim().split("\n").map(line=>{
-  const [w,pos,ru,ex=""]=line.split("|");
-  return {id:w,q:w,a:ru,pos,ex,group:pos.split(/[\s,&]/)[0]};
+  const [w,pos,ru,ex="",exTr=""]=line.split("|");
+  return {id:w,q:w,a:ru,pos,ex,exTr,group:pos.split(/[\s,&]/)[0],letter:w[0].toUpperCase()};
 });
 
 /* Each deck: q = prompt side, a = answer side. Quiz goes q→a, and 30% of the time a→q. */
 const DECKS = {
   very:{key:"known", qLang:"en", aLang:"en",
-        items:VERY.map(([w,s,ru])=>({id:w,q:"very "+w,a:s,tr:ru,pos:"",ex:"",group:""}))},
-  b1:  {key:"known:b1", qLang:"en", aLang:"ru", items:B1}
+        items:VERY.map(([w,s,ru])=>({id:w,q:"very "+w,a:s,tr:ru,pos:"",ex:"",exTr:"",group:""}))},
+  b1:  {key:"known:b1", qLang:"en", aLang:"ru", items:B1, byLetter:true}
 };
 
 const I18N = {
- ru:{deck:"Набор слов",cards:"Карточки",quiz:"Тест",tapHint:"Нажми, чтобы перевернуть",again:"Ещё раз",know:"Знаю",
+ ru:{deck:"Набор слов",letter:"Буква",all:"Все",cards:"Карточки",quiz:"Тест",tapHint:"Нажми, чтобы перевернуть",again:"Ещё раз",know:"Знаю",
      reset:"Начать заново",card:(i,n)=>`Карточка ${i} из ${n}`,known:(k,n)=>`Выучено: ${k}/${n}`,
      allDone:"Все карточки выучены! 🎉",
      qMeta:(i,n)=>`Вопрос ${i} из ${n}`,qScore:s=>`Счёт: ${s}`,next:"Дальше",finish:"Результат",again2:"Пройти ещё раз",
@@ -487,9 +497,9 @@ const I18N = {
      mistakes:"Ошибки:",footer:"Тапни карточку или нажми Пробел. В тесте — клавиши 1–4.",
      decks:{
        very:{title:"Very → Stronger",front:"Вместо",back:"Скажи",qFwd:"Сильная замена для",qRev:"Какое «very + …» означает"},
-       b1:{title:"B1 Preliminary · C",front:"Слово",back:"Перевод",qFwd:"Переведи",qRev:"Как это по-английски?"}
+       b1:{title:"B1 Preliminary",front:"Слово",back:"Перевод",qFwd:"Переведи",qRev:"Как это по-английски?"}
      }},
- en:{deck:"Word set",cards:"Flashcards",quiz:"Quiz",tapHint:"Tap to flip",again:"Again",know:"Got it",
+ en:{deck:"Word set",letter:"Letter",all:"All",cards:"Flashcards",quiz:"Quiz",tapHint:"Tap to flip",again:"Again",know:"Got it",
      reset:"Start over",card:(i,n)=>`Card ${i} of ${n}`,known:(k,n)=>`Learned: ${k}/${n}`,
      allDone:"All cards learned! 🎉",
      qMeta:(i,n)=>`Question ${i} of ${n}`,qScore:s=>`Score: ${s}`,next:"Next",finish:"See result",again2:"Try again",
@@ -497,7 +507,7 @@ const I18N = {
      mistakes:"Mistakes:",footer:"Tap the card or press Space. In the quiz use keys 1–4.",
      decks:{
        very:{title:"Very → Stronger",front:"Instead of",back:"Say",qFwd:"Stronger word for",qRev:"Which “very + …” means"},
-       b1:{title:"B1 Preliminary · C",front:"Word",back:"Translation",qFwd:"Translate",qRev:"Which English word means"}
+       b1:{title:"B1 Preliminary",front:"Word",back:"Translation",qFwd:"Translate",qRev:"Which English word means"}
      }}
 };
 
@@ -511,32 +521,41 @@ let mode = "cards";
 const t = k => I18N[lang][k];
 const td = k => I18N[lang].decks[deckId][k];
 const D = () => DECKS[deckId];
+const lines = s => s.replaceAll(" · ","\n"); // one example per line on the card
+// Current letter section of the deck ("all" when the deck has no sections or none is picked).
+const letterKey = () => "letter:"+deckId;
+let letter = "all";
+const pool = () => letter==="all" ? D().items : D().items.filter(x=>x.letter===letter);
+function loadLetter(){
+  letter = D().byLetter ? store.get(letterKey(),"all") : "all";
+  if(letter!=="all" && !D().items.some(x=>x.letter===letter)) letter="all";
+}
 
 /* ---------- Flashcards ---------- */
 let deck, idx, known;
 function cardsInit(reset){
   known = new Set(reset?[]:store.get(D().key,[]));
-  deck = shuffle(D().items.filter(x=>!known.has(x.id)));
+  deck = shuffle(pool().filter(x=>!known.has(x.id)));
   idx = 0; renderCard();
 }
 function renderCard(){
   $("card").classList.remove("flipped");
-  const items=D().items, n=items.length, done=!deck.length || idx>=deck.length;
+  const items=pool(), n=items.length, k=items.filter(x=>known.has(x.id)).length, done=!deck.length || idx>=deck.length;
   $("cFrontLabel").textContent=td("front"); $("cBackLabel").textContent=td("back");
-  $("cKnown").textContent=t("known")(known.size,n);
-  $("cBar").style.width=(known.size/n*100)+"%";
+  $("cKnown").textContent=t("known")(k,n);
+  $("cBar").style.width=(k/n*100)+"%";
   $("cAgain").disabled=$("cKnow").disabled=done;
   if(done){
-    if(deck.length && known.size<n){deck=shuffle(deck.filter(x=>!known.has(x.id)));idx=0;return renderCard();}
+    if(deck.length && k<n){deck=shuffle(deck.filter(x=>!known.has(x.id)));idx=0;return renderCard();}
     $("cMeta").textContent=""; $("cFront").textContent=t("allDone");
-    $("cPos").textContent=$("cEx").textContent=$("cBack").textContent=$("cTr").textContent=""; return;
+    $("cPos").textContent=$("cEx").textContent=$("cBack").textContent=$("cTr").textContent=$("cExTr").textContent=""; return;
   }
   const c=deck[idx];
   $("cMeta").textContent=t("card")(idx+1,deck.length);
   $("cFront").textContent=c.q; $("cFront").lang=D().qLang;
-  $("cPos").textContent=c.pos; $("cEx").textContent=c.ex;
+  $("cPos").textContent=c.pos; $("cEx").textContent=lines(c.ex);
   // delay back text swap so the answer doesn't flash during un-flip
-  setTimeout(()=>{$("cBack").textContent=c.a;$("cBack").lang=D().aLang;$("cTr").textContent=lang==="ru"&&c.tr||"";},150);
+  setTimeout(()=>{$("cBack").textContent=c.a;$("cBack").lang=D().aLang;$("cTr").textContent=lang==="ru"&&c.tr||"";$("cExTr").textContent=lines(c.exTr);},150);
 }
 function flip(){ if(deck.length && idx<deck.length) $("card").classList.toggle("flipped"); }
 function answerCard(ok){
@@ -547,10 +566,15 @@ function answerCard(ok){
 $("card").onclick=flip;
 $("cKnow").onclick=()=>answerCard(true);
 $("cAgain").onclick=()=>answerCard(false);
-$("cReset").onclick=()=>{store.set(D().key,[]);cardsInit(true)};
+$("cReset").onclick=()=>{
+  const inPool=new Set(pool().map(x=>x.id));
+  store.set(D().key,store.get(D().key,[]).filter(id=>!inPool.has(id)));
+  cardsInit(false);
+};
 
 /* ---------- Quiz ---------- */
 const QN=10; let qs, qi, score, mistakes, answered;
+const qn = () => qs.length;
 // 3 distractors: same part of speech when possible, never sharing the right answer's text on either side.
 function distractors(x, items){
   const pool=items.filter(y=>y.q!==x.q && y.a!==x.a), out=[], seenQ=new Set([x.q]), seenA=new Set([x.a]);
@@ -562,7 +586,7 @@ function distractors(x, items){
   return out;
 }
 function quizInit(){
-  const items=D().items;
+  const items=pool();
   qs = shuffle(items).slice(0,QN).map(x=>{
     const rev=Math.random()<.3; // 30%: reverse direction
     const opts=shuffle([x, ...distractors(x,items)]);
@@ -573,9 +597,9 @@ function quizInit(){
 }
 function renderQ(){
   const q=qs[qi], d=D(); answered=false;
-  $("qMeta").textContent=t("qMeta")(qi+1,QN);
+  $("qMeta").textContent=t("qMeta")(qi+1,qn());
   $("qScore").textContent=t("qScore")(score);
-  $("qBar").style.width=(qi/QN*100)+"%";
+  $("qBar").style.width=(qi/qn()*100)+"%";
   $("qPrompt").textContent=q.rev?td("qRev"):td("qFwd");
   $("qWord").textContent=q.rev?q.x.a:q.x.q; $("qWord").lang=q.rev?d.aLang:d.qLang;
   $("qPos").textContent=q.rev?"":q.x.pos;
@@ -592,14 +616,14 @@ function pick(i){
   btns.forEach((b,j)=>{b.disabled=true; if(q.opts[j]===q.answer) b.classList.add("correct");});
   if(q.opts[i]===q.answer) score++; else {btns[i].classList.add("wrong"); mistakes.push(q.x);}
   $("qScore").textContent=t("qScore")(score);
-  $("qNext").textContent=qi===QN-1?t("finish"):t("next");
+  $("qNext").textContent=qi===qn()-1?t("finish"):t("next");
   $("qNext").hidden=false; $("qNext").focus({preventScroll:true});
 }
-function nextQ(){ if(++qi<QN) renderQ(); else showResult(); }
+function nextQ(){ if(++qi<qn()) renderQ(); else showResult(); }
 function showResult(){
   $("qPlay").hidden=true; $("qDone").hidden=false;
-  const p=Math.round(score/QN*100);
-  $("rScore").textContent=`${score}/${QN}`;
+  const p=Math.round(score/qn()*100);
+  $("rScore").textContent=`${score}/${qn()}`;
   $("rMsg").textContent=t("msg")(p);
   $("rList").replaceChildren(...(mistakes.length?[Object.assign(document.createElement("li"),{textContent:t("mistakes")})]:[]),
     ...mistakes.map(m=>{const li=document.createElement("li");li.innerHTML=`<span></span><b></b>`;li.firstChild.textContent=m.q;li.lastChild.textContent=m.a;return li;}));
@@ -614,23 +638,41 @@ function renderDeckPicker(){
   $("deck").value=deckId;
   document.title=td("title");
 }
+function renderLetters(){
+  const el=$("letters"); el.hidden=!D().byLetter;
+  if(el.hidden) return el.replaceChildren();
+  el.setAttribute("aria-label",t("letter"));
+  const counts={}; D().items.forEach(x=>counts[x.letter]=(counts[x.letter]||0)+1);
+  const opts=[["all",t("all"),D().items.length], ...Object.keys(counts).sort().map(l=>[l,l,counts[l]])];
+  el.replaceChildren(...opts.map(([v,label,n])=>{
+    const b=document.createElement("button"); b.type="button"; b.dataset.letter=v;
+    b.setAttribute("aria-pressed",v===letter);
+    b.append(label, Object.assign(document.createElement("small"),{textContent:n}));
+    b.onclick=()=>setLetter(v); return b;
+  }));
+}
+function setLetter(l){
+  letter=l; store.set(letterKey(),l);
+  renderLetters(); cardsInit(false);
+  qs=null; if(mode==="quiz") quizInit();
+}
 function applyLang(){
   document.documentElement.lang=lang; store.set("lang",lang);
   document.querySelectorAll("[data-lang]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.lang===lang));
   document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent=t(el.dataset.i18n));
-  renderDeckPicker();
+  renderDeckPicker(); renderLetters();
   renderCard();
   if(qs){
     if(!$("qDone").hidden) return showResult();
     const q=qs[qi];
-    $("qMeta").textContent=t("qMeta")(qi+1,QN); $("qScore").textContent=t("qScore")(score);
+    $("qMeta").textContent=t("qMeta")(qi+1,qn()); $("qScore").textContent=t("qScore")(score);
     $("qPrompt").textContent=q.rev?td("qRev"):td("qFwd");
-    $("qNext").textContent=qi===QN-1?t("finish"):t("next");
+    $("qNext").textContent=qi===qn()-1?t("finish"):t("next");
   }
 }
 function setDeck(id){
   deckId=id; store.set("deck",id);
-  renderDeckPicker(); cardsInit(false);
+  loadLetter(); renderDeckPicker(); renderLetters(); cardsInit(false);
   qs=null; if(mode==="quiz") quizInit();
 }
 function setMode(m){
@@ -654,7 +696,7 @@ document.addEventListener("keydown",e=>{
   }
 });
 
-cardsInit(false); applyLang(); setMode("cards");
+loadLetter(); cardsInit(false); applyLang(); setMode("cards");
 </script>
 </body>
 </html>
